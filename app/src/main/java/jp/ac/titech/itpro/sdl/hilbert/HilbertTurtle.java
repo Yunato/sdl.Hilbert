@@ -7,18 +7,31 @@ public class HilbertTurtle extends Turtle {
     }
 
     public void draw(int order, double step, double turn) {
+        if (order == 1) {
+            drawOneOrder(order, step, turn);
+        } else {
+            drawMultipleOrder(order, step, turn);
+        }
+    }
+
+    public void drawOneOrder(int order, double step, double turn) {
         if (order > 0) {
             rotate(-turn);
-            draw(order - 1, step, -turn);
+            drawOneOrder(order - 1, step, -turn);
             forward(step);
             rotate(turn);
-            draw(order - 1, step, turn);
+            drawOneOrder(order - 1, step, turn);
             forward(step);
-            draw(order - 1, step, turn);
+            drawOneOrder(order - 1, step, turn);
             rotate(turn);
             forward(step);
-            draw(order - 1, step, -turn);
+            drawOneOrder(order - 1, step, -turn);
             rotate(-turn);
         }
+    }
+
+    public void drawMultipleOrder(int order, double step, double turn) {
+        rotate(-turn);
+        drawOneOrder(order - 1, step, -turn);
     }
 }

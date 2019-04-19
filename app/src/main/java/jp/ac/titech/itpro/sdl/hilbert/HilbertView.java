@@ -22,6 +22,10 @@ public class HilbertView extends View {
         }
     });
 
+    public Canvas getCanvas() {
+        return canvas;
+    }
+
     public HilbertView(Context context) {
         this(context, null);
     }
