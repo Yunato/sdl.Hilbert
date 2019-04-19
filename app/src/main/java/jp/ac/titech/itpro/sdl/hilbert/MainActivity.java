@@ -9,6 +9,8 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     private final static int MAX_ORDER = 9;
+    public static final String EXTRA_STRING_ORDER =
+            "jp.ac.titech.itpro.sdl.hilbert.EXTRA_STRING_KEY";
     private int order = 1;
 
     private TextView orderView;
@@ -42,12 +44,22 @@ public class MainActivity extends AppCompatActivity {
                 display();
             }
         });
+
+        if (savedInstanceState != null) {
+            order = savedInstanceState.getInt(EXTRA_STRING_ORDER);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         display();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(EXTRA_STRING_ORDER, order);
     }
 
     private void display() {
