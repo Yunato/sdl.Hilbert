@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_STRING_ORDER =
             "jp.ac.titech.itpro.sdl.hilbert.EXTRA_STRING_KEY";
     private int order = 1;
+    private BitmapManager manager;
 
     private TextView orderView;
     private HilbertView hilbertView;
@@ -32,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 assertTrue(order > 1, "A room to decrement order should exist");
+                if(!manager.wasDrawn(order)){
+                    manager.setFigure(order, hilbertView.getBitmap());
+                }
                 order--;
                 display();
             }
@@ -40,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 assertTrue(order < MAX_ORDER, "A room to increment order should exist");
+                if(!manager.wasDrawn(order)){
+                    manager.setFigure(order, hilbertView.getBitmap());
+                }
                 order++;
                 display();
             }
@@ -48,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             order = savedInstanceState.getInt(EXTRA_STRING_ORDER);
         }
+        manager = new BitmapManager(MAX_ORDER);
     }
 
     @Override
@@ -64,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void display() {
         orderView.setText(getString(R.string.order_view_format, order));
-        hilbertView.setOrder(order);
+        hilbertView.setOrder(order, manager.wasDrawn(order));
         decButton.setEnabled(order > 1);
         incButton.setEnabled(order < MAX_ORDER);
     }
