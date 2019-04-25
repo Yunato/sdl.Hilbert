@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_STRING_ORDER =
             "jp.ac.titech.itpro.sdl.hilbert.EXTRA_STRING_KEY";
     private int order = 1;
+    private boolean isFist = true;
     private BitmapManager manager;
 
     private TextView orderView;
@@ -72,9 +73,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void display() {
         orderView.setText(getString(R.string.order_view_format, order));
-        hilbertView.setOrder(order, manager.wasDrawn(order));
+        if(!isFist){
+            if(manager.wasDrawn(order)){
+                hilbertView.setBitmap(manager.getFigure(order), true);
+            }else{
+                hilbertView.setBitmap(manager.getFigure(order - 1), false);
+            }
+        }
+        hilbertView.setOrder(order);
         decButton.setEnabled(order > 1);
         incButton.setEnabled(order < MAX_ORDER);
+        isFist = false;
     }
 
     public static void assertTrue(boolean f, String message) {

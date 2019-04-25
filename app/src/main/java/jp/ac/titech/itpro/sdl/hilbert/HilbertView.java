@@ -15,9 +15,11 @@ public class HilbertView extends View {
     private Canvas canvas;
     private Canvas savedCanvas;
     private Bitmap bitmap;
+    private Bitmap editedBitmap;
 
     private int order = 1;
-    private boolean canDraw = false;
+    private boolean isFirst = true;
+    private boolean wasDrawn = false;
 
     private HilbertTurtle turtle = new HilbertTurtle(new Turtle.Drawer() {
         @Override
@@ -54,13 +56,12 @@ public class HilbertView extends View {
         super.onDraw(canvas);
         this.canvas = canvas;
 
-        // Create canvas object to save
         int w = canvas.getWidth();
         int h = canvas.getHeight();
-        bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        savedCanvas = new Canvas(bitmap);
+        // Create canvas object to save
+        editedBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        savedCanvas = new Canvas(editedBitmap);
         Canvas[] canvases = { this.canvas, savedCanvas};
-        HilbertTurtle[] turtles = { turtle, savedTurtle};
 
         // Draw background
         paint.setColor(Color.DKGRAY);
@@ -73,8 +74,42 @@ public class HilbertView extends View {
         paint.setStrokeWidth(3);
         int size = Math.min(w, h);
         double step = (double) size / (1 << order);
+        int x, y;
+        int width, height;
+        width = height = (int)step;
+        x = (w - size + width) / 2;
+        y = (h + size - width) / 2;
 
-        // Draw hilbert
+        if(isFirst){
+            drawHilbert(w, h, size, step);
+            trimBitmap(x, y - height, width, height);
+            bitmap = editedBitmap;
+            isFirst = false;
+        }else if(wasDrawn){
+            drawBitmap(x, y - height);
+        }else{
+            drawPreBitmap();
+            bitmap = editedBitmap;
+        }
+    }
+
+    public void setOrder(int n) {
+        order = n;
+        invalidate();
+    }
+
+    public void setBitmap(Bitmap bitmap, boolean wasDrawn){
+        this.bitmap = bitmap;
+        this.wasDrawn = wasDrawn;
+    }
+
+    public Bitmap getBitmap(){
+        return bitmap;
+    }
+
+    private void drawHilbert(int w, int h, int size, double step){
+        savedCanvas = new Canvas(editedBitmap);
+        HilbertTurtle[] turtles = { turtle, savedTurtle};
         for(HilbertTurtle tmp : turtles){
             tmp.setPos((w - size + step) / 2, (h + size - step) / 2);
             tmp.setDir(HilbertTurtle.E);
@@ -82,13 +117,14 @@ public class HilbertView extends View {
         }
     }
 
-    public void setOrder(int n, boolean canDraw) {
-        order = n;
-        this.canDraw = canDraw;
-        invalidate();
+    private void drawPreBitmap(){
     }
 
-    public Bitmap getBitmap(){
-        return bitmap;
+    private void drawBitmap(int x, int y){
+        canvas.drawBitmap(bitmap, x, y, paint);
+    }
+
+    private void trimBitmap(int x, int y, int width, int height){
+        editedBitmap = Bitmap.createBitmap(editedBitmap, x, y, width, height, null, true);
     }
 }
