@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
@@ -88,7 +89,7 @@ public class HilbertView extends View {
         }else if(wasDrawn){
             drawBitmap(x, y - height);
         }else{
-            drawPreBitmap();
+            drawPreBitmap(x, y - height);
             bitmap = editedBitmap;
         }
     }
@@ -117,7 +118,13 @@ public class HilbertView extends View {
         }
     }
 
-    private void drawPreBitmap(){
+    private void drawPreBitmap(int x, int y){
+        Bitmap srcBitmap = Bitmap.createBitmap(bitmap);
+        Matrix matrix = new Matrix();
+        float rsz_rate = (float)(1 << (order - 1)) / (1 << order);
+        matrix.postScale(rsz_rate, rsz_rate);
+        bitmap = Bitmap.createBitmap(srcBitmap, 0, 0, srcBitmap.getWidth(), srcBitmap.getHeight(), matrix, true);
+        canvas.drawBitmap(bitmap, x, y, paint);
     }
 
     private void drawBitmap(int x, int y){
